@@ -2,8 +2,9 @@ Animation Programming is an ISART Digital Montreal project made in second year o
 
 The goal of the project was to read those data and run the animation on screen. It uses the math library we made that year to perform all the calculation on the CPU (except the hardware skinning who is done in the vertex shader).
 
-Note: If not running on first try, make sure the Project working directory is set on : $(SolutionDir)Data
+Note: If not running on first try, make sure the Project Working Directory is set on : $(SolutionDir)Data
 Otherwise change it to that manners.
+Also please note that the project can only run in x86 Platform due to WhiteBox's specifications.
 
 During the run, keys :
 
