@@ -14,4 +14,4 @@ During the run, keys :
  - R : switch to the running animation
  - Z : switch to the walking animation
  - WASD : to move in world space
- - mouse : to rotate in world space
+ - Left mouse button : Hold left mouse button to rotate the camera in world space
