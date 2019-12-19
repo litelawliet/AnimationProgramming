@@ -1,5 +1,5 @@
 #pragma once
-#include <cmath>
+#include <stdexcept>
 #include <iostream>
 
 namespace GPM
@@ -11,7 +11,7 @@ namespace GPM
 	constexpr Vector3<T>::Vector3(const Vector3<U>& p_other) : x{ p_other.x }, y{ p_other.y }, z{ p_other.z }{}
 
 	template <typename T>
-    template <typename U>
+	template <typename U>
 	constexpr Vector3<T>::Vector3(Vector3<U>&& p_other) noexcept
 	{
 		x = static_cast<T>(p_other.x);
@@ -122,7 +122,7 @@ namespace GPM
 	template<typename U>
 	constexpr Vector3<T> Vector3<T>::Cross(const Vector3<T>& p_vectorA, const Vector3<U>& p_vectorB)
 	{
-		Vector3<T> tmp;
+		Vector3<T> tmp{};
 		tmp.x = (p_vectorA.y * p_vectorB.z) - (p_vectorA.z * p_vectorB.y);
 		tmp.y = (p_vectorA.z * p_vectorB.x) - (p_vectorA.x * p_vectorB.z);
 		tmp.z = (p_vectorA.x * p_vectorB.y) - (p_vectorA.y * p_vectorB.x);
@@ -134,40 +134,43 @@ namespace GPM
 	template<typename U>
 	constexpr Vector3<T> Vector3<T>::Lerp(Vector3<T>& p_vectorA, Vector3<U>& p_vectorB, const T p_factor)
 	{
-        if (p_factor < 0)
-            return p_vectorA;
+		if (p_factor < 0)
+			return p_vectorA;
 
-		Vector3<T> lerped_vector;
-		lerped_vector = p_vectorA + ((p_vectorB - p_vectorA) * p_factor);
+		Vector3<T> lerped_vector = p_vectorA + ((p_vectorB - p_vectorA) * p_factor);
 		return lerped_vector;
 	}
 
-    template<typename T>
-    template<typename U>
-    constexpr Vector3<T> Vector3<T>::Slerp(Vector3<T>& p_vectorA, Vector3<U>& p_vectorB, const T p_factor)
-    {
-        if (p_factor < 0)
-            return p_vectorA;
+	template<typename T>
+	template<typename U>
+	constexpr Vector3<T> Vector3<T>::Slerp(Vector3<T>& p_vectorA, Vector3<U>& p_vectorB, const T p_factor)
+	{
+		if (p_factor < 0)
+			return p_vectorA;
 
-       /* Vector3<T> tmpVec;
-        float angle = p_vectorA.Angle(p_vectorB) * p_factor;
-        tmpVec = p_vectorB - p_vectorA * p_vectorA.Dot(p_vectorB);
-        tmpVec.Normalize();*/
+		/* Vector3<T> tmpVec;
+		 float angle = p_vectorA.Angle(p_vectorB) * p_factor;
+		 tmpVec = p_vectorB - p_vectorA * p_vectorA.Dot(p_vectorB);
+		 tmpVec.Normalize();*/
 
-        float dot = p_vectorA.Angle(p_vectorB);
-        float theta = acos(dot) * p_factor;
-        Vector3<T> relativeVec = p_vectorB - p_vectorA * dot;
-        relativeVec.Normalize();
+		float dot = p_vectorA.Angle(p_vectorB);
+		const float theta = Tools::Utils::Arccos(dot) * p_factor;
+		Vector3<T> relativeVec = p_vectorB - p_vectorA * dot;
+		relativeVec.Normalize();
 
-        return { ((p_vectorA * cos(theta)) + (relativeVec * sin(theta))) };
-        //return { (p_vectorA * cos(angle)) + (tmpVec * sin(angle)) };
-    }
+		return { ((p_vectorA * Tools::Utils::Cos(theta)) + (relativeVec * Tools::Utils::Sin(theta))) };
+		//return { (p_vectorA * cos(angle)) + (tmpVec * sin(angle)) };
+	}
 
 	template<typename T>
 	template<typename U>
 	constexpr T Vector3<T>::Distance(const Vector3<T>& p_vectorA, const Vector3<U>& p_vectorB)
 	{
-		return sqrt(pow((p_vectorA.x - p_vectorB.x), 2) + pow((p_vectorA.y - p_vectorB.y), 2) + pow((p_vectorA.z - p_vectorB.z), 2));
+		return Tools::Utils::SquareRoot(
+			Tools::Utils::Pow((p_vectorA.x - p_vectorB.x), 2)
+			+ Tools::Utils::Pow((p_vectorA.y - p_vectorB.y), 2)
+			+ Tools::Utils::Pow((p_vectorA.z - p_vectorB.z), 2)
+		);
 	}
 
 	template<typename T>
@@ -184,8 +187,8 @@ namespace GPM
 	template<typename U>
 	constexpr T Vector3<T>::Dot(const Vector3<U>& p_other) const
 	{
-        Vector3<T> tmp = p_other.Normalized();
-        Vector3<T> tmp2 = Normalized();
+		Vector3<T> tmp = p_other.Normalized();
+		Vector3<T> tmp2 = Normalized();
 		return (tmp2.x * tmp.x) + (tmp2.y * tmp.y) + (tmp2.z * tmp.z);
 	}
 
@@ -196,13 +199,13 @@ namespace GPM
 		T dot = (x * p_other.x) + (y * p_other.y) + (z * p_other.z);
 		T mag = Magnitude() * p_other.Magnitude();
 
-		return acos(dot / mag);
+		return Tools::Utils::Arccos(dot / mag);
 	}
 
 	template<typename T>
 	constexpr T Vector3<T>::Magnitude() const
 	{
-		return sqrt((x * x) + (y * y) + (z * z));
+		return Tools::Utils::SquareRoot((x * x) + (y * y) + (z * z));
 	}
 
 	template<typename T>
@@ -214,14 +217,14 @@ namespace GPM
 #pragma endregion
 #pragma region Operator Overloading
 	template<typename T>
-    template<typename U>
+	template<typename U>
 	constexpr Vector3<T> Vector3<T>::operator+(const Vector3<U>& p_other) const
 	{
 		return Vector3<T>(x + p_other.x, y + p_other.y, z + p_other.z);
 	}
 
 	template<typename T>
-    template<typename U>
+	template<typename U>
 	constexpr Vector3<T> Vector3<T>::operator-(const Vector3<U>& p_other) const
 	{
 		return Vector3<T>(x - p_other.x, y - p_other.y, z - p_other.z);
@@ -234,14 +237,14 @@ namespace GPM
 	}
 
 	template<typename T>
-    template<typename U>
+	template<typename U>
 	constexpr Vector3<T> Vector3<T>::operator*(const Vector3<U>& p_other) const
 	{
 		return Vector3<T>(x * p_other.x, y * p_other.y, z * p_other.z);
 	}
 
 	template<typename T>
-    template<typename U>
+	template<typename U>
 	constexpr Vector3<T> Vector3<T>::operator/(const Vector3<U>& p_other) const
 	{
 		if (p_other.x == 0 || p_other.y == 0 || p_other.z == 0 || x == 0 || y == 0 || z == 0)
@@ -253,8 +256,8 @@ namespace GPM
 	}
 
 	template <typename T>
-    template <typename U>
-	constexpr Vector3<T>& Vector3<T>::operator=(const Vector3<U>& p_other) 
+	template <typename U>
+	constexpr Vector3<T>& Vector3<T>::operator=(const Vector3<U>& p_other)
 	{
 		x = p_other.x;
 		y = p_other.y;
@@ -264,7 +267,7 @@ namespace GPM
 	}
 
 	template<typename T>
-    template<typename U>
+	template<typename U>
 	constexpr inline Vector3<T>& Vector3<T>::operator+=(const Vector3<U> p_other)
 	{
 		x += p_other.x;
@@ -275,7 +278,7 @@ namespace GPM
 	}
 
 	template<typename T>
-    template<typename U>
+	template<typename U>
 	constexpr inline Vector3<T>& Vector3<T>::operator-=(const Vector3<U> p_other)
 	{
 		x -= p_other.x;
@@ -286,7 +289,7 @@ namespace GPM
 	}
 
 	template<typename T>
-    template<typename U>
+	template<typename U>
 	constexpr inline Vector3<T>& Vector3<T>::operator*=(const Vector3<U> p_other)
 	{
 		x *= p_other.x;
@@ -307,7 +310,7 @@ namespace GPM
 	}
 
 	template<typename T>
-    template<typename U>
+	template<typename U>
 	constexpr inline Vector3<T>& Vector3<T>::operator/=(const Vector3<U> p_other)
 	{
 		x /= p_other.x;
@@ -318,7 +321,7 @@ namespace GPM
 	}
 
 	template<typename T>
-    template<typename U>
+	template<typename U>
 	constexpr inline bool Vector3<T>::operator==(const Vector3<U>& p_other) const
 	{
 		if (x == p_other.x && y == p_other.y && z == p_other.z)
@@ -328,13 +331,28 @@ namespace GPM
 	}
 
 	template<typename T>
-    template<typename U>
-	constexpr inline bool Vector3<T>::operator!=(const Vector3<U>& p_other) const 
+	template<typename U>
+	constexpr inline bool Vector3<T>::operator!=(const Vector3<U>& p_other) const
 	{
 		if (x == p_other.x && y == p_other.y && z == p_other.z)
 			return false;
 		else
 			return true;
+	}
+
+	template<typename T>
+	constexpr inline T Vector3<T>::operator[](const int p_index) const
+	{
+		if (p_index < 0 || p_index > 2)
+			throw std::out_of_range("Out of range access with index:" + std::to_string(p_index) + " in Vector3");
+
+		switch (p_index)
+		{
+		case 0: return x;
+		case 1: return y;
+		case 2: return z;
+		default: return static_cast<T>(1.0);
+		}
 	}
 #pragma endregion
 #pragma region Utils
@@ -345,12 +363,12 @@ namespace GPM
 		return std::string(std::to_string(x) + "/" + std::to_string(y) + "/" + std::to_string(z) + "\n");
 	}
 
-    template <typename T>
-    constexpr std::ostream& operator<<(std::ostream& p_stream, const Vector3<T>& p_vector)
-    {
-        p_stream << "x : " << p_vector.x << " y : " << p_vector.y <<
-            " z : " << p_vector.z;
-        return  { p_stream };
-    }
+	template <typename T>
+	constexpr std::ostream& operator<<(std::ostream& p_stream, const Vector3<T>& p_vector)
+	{
+		p_stream << "x : " << p_vector.x << " y : " << p_vector.y <<
+			" z : " << p_vector.z;
+		return  { p_stream };
+	}
 #pragma endregion
 }

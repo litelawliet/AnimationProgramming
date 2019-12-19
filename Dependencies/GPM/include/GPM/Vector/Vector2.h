@@ -1,5 +1,4 @@
 #pragma once
-#include <utility>
 #include <sstream>
 #include <string>
 
@@ -208,7 +207,7 @@ namespace GPM
 		 * @brief Add Vector given by parameter to this Vector
 		 * @param p_otherVector2 Vector to add
 		 */
-		constexpr void Add(const GPM::Vector2<T> & p_otherVector2);
+		constexpr void Add(const GPM::Vector2<T>& p_otherVector2);
 
 		/**
 		* @brief Add Vector given by parameter to this Vector
@@ -294,13 +293,20 @@ namespace GPM
 
 		template <typename U>
 		constexpr operator struct Vector2<U>() const { return Vector2<U>{ static_cast<U>(x), static_cast<U>(y) }; }
-		
+
+		/**
+		* @brief Return the value aliased with index, just like arrays
+		* @param p_index The index to access. 0 = x, 1 = y
+		* @return Return the value associated at the indicated index
+		* @note Vector4 representation is as follow : [x, y]
+		*/
+		constexpr T operator[](const int p_index) const;
 #pragma endregion
 #pragma endregion
-};
+	};
 
 #pragma region Non-member Operator Overloads
-	
+
 	template <typename T>
 	constexpr std::ostream& operator<<(std::ostream& p_stream, const Vector2<T>& p_vector);
 
@@ -312,7 +318,7 @@ namespace GPM
 
 	template<typename T, typename U>
 	constexpr Vector2<T> operator+(Vector2<T> const& p_vector2, U const& p_scalar);
-	
+
 	template<typename T, typename U>
 	constexpr Vector2<T> operator+(U const& p_scalar, Vector2<T> const& p_vector2);
 
@@ -324,7 +330,7 @@ namespace GPM
 
 	template<typename T, typename U>
 	constexpr Vector2<T> operator-(Vector2<T> const& p_vector2, U const& p_scalar);
-	
+
 	template<typename T, typename U>
 	constexpr Vector2<T> operator-(U const& p_scalar, Vector2<T> const& p_vector2);
 
@@ -353,7 +359,7 @@ namespace GPM
 	constexpr void operator/=(Vector2<T>& p_vector2Left, const U& p_scalar);
 
 #pragma endregion
-	
+
 	using Vector2U = GPM::Vector2<unsigned int>;
 	using Vector2I = GPM::Vector2<int>;
 	using Vector2F = GPM::Vector2<float>;
